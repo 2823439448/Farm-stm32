@@ -2,13 +2,11 @@
 #include <string.h>
 #include <stdlib.h>
 
-/* ?????,???? */
-volatile float g_target_temp  = 25.0f;
-volatile float g_target_humid = 60.0f;
+volatile float   g_target_temp  = 0.0f;  /* 0?????,??ESP8266?? */
+volatile float   g_target_humid = 0.0f;
 
-/* ???? */
 static volatile char    s_rxbuf[UART_RXBUF_SIZE];
-static volatile uint8_t s_rxidx  = 0;
+static volatile uint8_t s_rxidx   = 0;
 volatile uint8_t        g_rx_ready = 0;
 
 void UART1_Init(void) {
@@ -18,13 +16,11 @@ void UART1_Init(void) {
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA, ENABLE);
 
-    /* PA9 TX */
     gi.GPIO_Pin   = GPIO_Pin_9;
     gi.GPIO_Mode  = GPIO_Mode_AF_PP;
     gi.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &gi);
 
-    /* PA10 RX */
     gi.GPIO_Pin  = GPIO_Pin_10;
     gi.GPIO_Mode = GPIO_Mode_IN_FLOATING;
     GPIO_Init(GPIOA, &gi);
@@ -37,7 +33,6 @@ void UART1_Init(void) {
     ui.USART_Mode                = USART_Mode_Tx | USART_Mode_Rx;
     USART_Init(USART1, &ui);
 
-    /* ?????? */
     USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 
     ni.NVIC_IRQChannel                   = USART1_IRQn;
@@ -49,21 +44,19 @@ void UART1_Init(void) {
     USART_Cmd(USART1, ENABLE);
 }
 
-/* UART1????:???????,?\n?ready */
 void USART1_IRQHandler(void) {
     if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
         char ch = (char)USART_ReceiveData(USART1);
         if (ch == '\n') {
             s_rxbuf[s_rxidx] = '\0';
             s_rxidx    = 0;
-            g_rx_ready = 1;   /* ??main?? */
+            g_rx_ready = 1;
         } else if (ch != '\r' && s_rxidx < UART_RXBUF_SIZE - 1) {
             s_rxbuf[s_rxidx++] = ch;
         }
     }
 }
 
-/* ??????? */
 void UART1_Send(const char *str) {
     while (*str) {
         while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
@@ -71,23 +64,15 @@ void UART1_Send(const char *str) {
     }
 }
 
-/**
- * ?????????(?g_rx_ready=1??main??)
- * ????:
- *   CMD:heat,25.0    ? ??????
- *   CMD:humid,70.0   ? ??????
- */
 void UART1_ParseCMD(void) {
     const char *buf = (const char *)s_rxbuf;
-
     if (strncmp(buf, "CMD:heat,", 9) == 0) {
         float val = atof(buf + 9);
-        if (val > 0 && val < 80.0f)           /* ??????? */
+        if (val > 0 && val <= 80.0f)
             g_target_temp = val;
     } else if (strncmp(buf, "CMD:humid,", 10) == 0) {
         float val = atof(buf + 10);
         if (val >= 0 && val <= 100.0f)
             g_target_humid = val;
     }
-    /* ???????? */
 }

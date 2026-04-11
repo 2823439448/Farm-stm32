@@ -14,9 +14,9 @@ extern volatile float g_target_humid;
 /* SysTick毫秒计数（来自 main.c） */
 extern volatile uint32_t g_tick_ms;
 
-void Control_Init(void);       /* 初始化GPIO（水泵、风扇、蜂鸣器） */
-void Control_HeaterPID(void);  /* 每分钟采样后调用，计算PID更新热床及风扇 */
-void Control_PumpUpdate(void); /* 主循环高频调用，水泵软PWM状态机 */
-void Control_AlarmUpdate(void);/* 主循环调用，超限驱动蜂鸣器 */
+void Control_Init(void);        /* 初始化GPIO */
+void Control_HeaterPID(void);   /* 每分钟调用，风扇控温 */
+void Control_PumpUpdate(void);  /* 主循环调用，水泵软PWM控湿 */
+void Control_AlarmUpdate(void); /* 主循环调用，超限蜂鸣器报警 */
 
 #endif

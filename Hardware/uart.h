@@ -3,18 +3,14 @@
 
 #include "stm32f10x.h"
 
-/* ??????? */
 #define UART_RXBUF_SIZE  64
 
-/* ?????(?ESP8266 CMD??,?control.c??) */
-extern volatile float g_target_temp;
-extern volatile float g_target_humid;
-
-/* ???????(main.c???) */
+extern volatile float   g_target_temp;
+extern volatile float   g_target_humid;
 extern volatile uint8_t g_rx_ready;
 
 void UART1_Init(void);
 void UART1_Send(const char *str);
-void UART1_ParseCMD(void);   /* ?????????,?main???? */
+void UART1_ParseCMD(void);
 
 #endif
