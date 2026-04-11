@@ -77,3 +77,19 @@ int main(void) {
         Control_AlarmUpdate();
     }
 }
+ /*
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │                        引脚分配汇总                                       │
+ * │                                                                          │
+ * │  PA1   DHT11 DATA          单总线双向GPIO，外接4.7kΩ上拉至3.3V         │
+ * │  PA8   TIM1_CH1 PWM        热床MOS管栅极，1kHz PWM，AF_PP              │
+ * │  PA9   USART1_TX           → ESP8266 RX，AF_PP                        │
+ * │  PA10  USART1_RX           ← ESP8266 TX，IN_FLOATING                  │
+ * │  PB0   水泵继电器 IN2      OUT_PP，高电平触发继电器吸合                 │
+ * │  PB1   蜂鸣器三极管基极    OUT_PP，高电平触发S8050导通                  │
+ * │  PB10   风扇继电器 IN1      OUT_PP，高电平触发继电器吸合                 │
+ * │  PB6   I2C1_SCL            → BH1750 SCL，AF_OD                        │
+ * │  PB7   I2C1_SDA            → BH1750 SDA，AF_OD                        │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ */
+
